@@ -8,6 +8,7 @@ public class NodeCreator : MonoBehaviour {
 	private GameObject[,] nodes;
 	private static int WIDTH; 
 	private static int HEIGHT; 
+	private static float REMOVE_PROB; 
 
 	public GameObject edgeObj;
 
@@ -15,14 +16,14 @@ public class NodeCreator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		REMOVE_PROB = .75f; 
 		WIDTH = 5; 
 		HEIGHT = 5; 
 		CreateGraph (); 
 		foreach (Point p in points) 
 		{
-			Instantiate (node, new Vector2 (p.getX (), p.getY ()), Quaternion.identity); 
+			Instantiate (node, new Vector2 (p.getX () * 2, p.getY () * 2), Quaternion.identity); 
 		}
-
 		CreateEdges ();
 	}
 	
@@ -78,16 +79,17 @@ public class NodeCreator : MonoBehaviour {
 			foreach (Point terminal in initial.getNeighbors()) 
 			{
 				Edge e = new Edge (initial, terminal); 
-				if (!edgeSet.Contains (e)) 
+				if (!edgeSet.Contains (e) && Random.value > REMOVE_PROB) 
 				{
 					edgeSet.Add (e); 
 					GameObject thisEdge = Instantiate (edgeObj, new Vector2(0,0), Quaternion.identity) as GameObject;
-					thisEdge.GetComponent<LineRenderer>().SetPosition (0, new Vector3(initial.getX(), initial.getY(), 0f));
-					thisEdge.GetComponent<LineRenderer>().SetPosition (1, new Vector3(terminal.getX(), terminal.getY(), 0f));
+					thisEdge.GetComponent<LineRenderer>().SetPosition (0, new Vector3(initial.getX() * 2, initial.getY() * 2, 0f));
+					thisEdge.GetComponent<LineRenderer>().SetPosition (1, new Vector3(terminal.getX() * 2, terminal.getY() * 2, 0f));
 				}
 			}
 
 		}
+			
 	}
 
 	class Edge {
@@ -130,4 +132,6 @@ public class NodeCreator : MonoBehaviour {
 			return start.getX() ^ end.getX();
 		}
 	}
+
+
 }
